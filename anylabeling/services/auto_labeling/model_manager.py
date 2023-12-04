@@ -381,7 +381,6 @@ class ModelManager(QObject):
             self.auto_segmentation_model_unselected.emit()
 
         model_config = copy.deepcopy(self.model_configs[model_id])
-
         # Download and extract model
         if not model_config.get("has_downloaded", True):
             model_config = self._download_and_extract_model(model_config)
@@ -408,6 +407,36 @@ class ModelManager(QObject):
                     )
                 )
                 return
+
+        elif model_config["type"] == "grounding_dino":
+            from .grounding_sam import GroundingSAM
+
+            model_config["encoder_model_path"]="https://github.com/CVHub520/X-AnyLabeling/releases/download/v2.0.0/sam_hq_vit_l_encoder_quant.onnx"
+            model_config["decoder_model_path"]="https://github.com/CVHub520/X-AnyLabeling/releases/download/v2.0.0/sam_hq_vit_l_decoder.onnx"
+            model_config["input_size"]=1024
+            model_config["max_width"]=1024
+            model_config["max_height"]=682
+
+            try:
+                model_config["model"] = GroundingSAM(
+                    model_config, on_message=self.new_model_status.emit
+                )
+                self.auto_segmentation_model_unselected.emit()
+            except Exception as e:  # noqa
+                self.new_model_status.emit(
+                    self.tr(
+                        "Error in loading model: {error_message}".format(
+                            error_message=str(e)
+                        )
+                    )
+                )
+                print(
+                    "Error in loading model: {error_message}".format(
+                        error_message=str(e)
+                    )
+                )
+                return
+
         elif model_config["type"] == "yolov8":
             from .yolov8 import YOLOv8
 
@@ -444,6 +473,7 @@ class ModelManager(QObject):
                         error_message=str(e)
                     )
                 )
+
                 self.new_model_status.emit(
                     self.tr(
                         "Error in loading model: {error_message}".format(

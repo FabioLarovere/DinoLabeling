@@ -1,3 +1,6 @@
+- name: "Grounding_dino_v0.1.0-alpha2"
+  display_name: Grounding Dino
+  download_url: https://github.com/IDEA-Research/GroundingDINO/archive/refs/tags/v0.1.0-alpha2.zip
 - name: "mobile_sam_20230629"
   display_name: Segment Anything (MobileSAM)
   download_url: https://huggingface.co/vietanhdev/segment-anything-onnx-models/resolve/main/mobile_sam_20230629.zip
